@@ -1,0 +1,20 @@
+<section class="details-card">
+  <div class="container">
+    <div class="row">
+      <% @documents.each do |doc| %>
+        <div class="col-md-3">
+          <div class="card-content">
+            <div class="card-img">
+              <img src="/images/doc_icon.png" alt="rss feed">
+            </div>
+            <div class="card-desc">
+              <h3><%= doc.nombre %></h3>
+              <p>Descripción documento, autor o no sé</p>
+              <a><%= link_to 'Ver documento', doc, class: "btn-card" %></a>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
