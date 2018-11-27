@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 0) do
+ActiveRecord::Schema.define(version: 2018_11_27_020814) do
 
   create_table "documents", primary_key: "idDocumento", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "nombre", limit: 45, null: false
@@ -34,7 +34,19 @@ ActiveRecord::Schema.define(version: 0) do
     t.binary "foto", limit: 4294967295, null: false
   end
 
-  add_foreign_key "documents", "professors", column: "numeroPersonal", primary_key: "numeroPersonal", name: "fk_Documento_Academico"
-  add_foreign_key "partners", "documents", column: "idDocumento", primary_key: "idDocumento", name: "fk_Academico_has_Documento_Documento1"
-  add_foreign_key "partners", "professors", column: "numeroPersonal", primary_key: "numeroPersonal", name: "fk_Academico_has_Documento_Academico1"
+  create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  end
+
+  add_foreign_key "documents", "professors", column: "numeroPersonal", primary_key: "numeropersonal", name: "fk_Documento_Academico"
+  add_foreign_key "partners", "documents", column: "idDocumento", primary_key: "iddocumento", name: "fk_Academico_has_Documento_Documento1"
+  add_foreign_key "partners", "professors", column: "numeroPersonal", primary_key: "numeropersonal", name: "fk_Academico_has_Documento_Academico1"
 end
