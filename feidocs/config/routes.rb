@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
-  devise_for :users
+
+  devise_for :professors
   resources :documents
 
   root 'inicio#index'

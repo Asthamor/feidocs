@@ -10,31 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_11_27_020814) do
+ActiveRecord::Schema.define(version: 2018_11_28_221041) do
 
-  create_table "documents", primary_key: "idDocumento", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.string "nombre", limit: 45, null: false
-    t.text "path", limit: 255, null: false
-    t.integer "numeroPersonal", null: false
-    t.index ["numeroPersonal"], name: "fk_Documento_Academico_idx"
+  create_table "documents", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name", default: "", null: false
+    t.string "path", default: ""
+    t.string "mimeType", default: "", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
-  create_table "partners", primary_key: ["numeroPersonal", "idDocumento"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.integer "numeroPersonal", null: false
-    t.integer "idDocumento", null: false
-    t.index ["idDocumento"], name: "fk_Academico_has_Documento_Documento1_idx"
-    t.index ["numeroPersonal"], name: "fk_Academico_has_Documento_Academico1_idx"
-  end
-
-  create_table "professors", primary_key: "numeroPersonal", id: :integer, default: nil, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.string "nombres", limit: 45, null: false
-    t.string "apellidos", limit: 45, null: false
-    t.string "correo", limit: 45, null: false
-    t.string "contraseña", limit: 64, null: false
-    t.binary "foto", limit: 4294967295, null: false
-  end
-
-  create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "professors", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
@@ -42,11 +28,11 @@ ActiveRecord::Schema.define(version: 2018_11_27_020814) do
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["email"], name: "index_users_on_email", unique: true
-    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.string "personalNumber", default: "0", null: false
+    t.string "fullName", default: "", null: false
+    t.binary "photo"
+    t.index ["email"], name: "index_professors_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_professors_on_reset_password_token", unique: true
   end
 
-  add_foreign_key "documents", "professors", column: "numeroPersonal", primary_key: "numeropersonal", name: "fk_Documento_Academico"
-  add_foreign_key "partners", "documents", column: "idDocumento", primary_key: "iddocumento", name: "fk_Academico_has_Documento_Documento1"
-  add_foreign_key "partners", "professors", column: "numeroPersonal", primary_key: "numeropersonal", name: "fk_Academico_has_Documento_Academico1"
 end
