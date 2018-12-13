@@ -4,7 +4,6 @@ class CreateDocuments < ActiveRecord::Migration[5.2]
 
       t.string :name, null: false, default: ""
       t.string :path, null: true, default: ""
-      t.string :mimeType, null: false, default: ""
 
       t.timestamps
     end

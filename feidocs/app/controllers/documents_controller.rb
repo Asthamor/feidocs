@@ -17,4 +17,19 @@ class DocumentsController < ApplicationController
     @document = Document.new
   end
 
+  def create
+    #render plain: params[:image].inspect
+    @document = Document.new document_params
+    @document.professor_id = current_professor.id
+    @document.save
+
+    redirect_to @document
+  end
+
+
+
+  def document_params
+    params.require(:document).permit(:name, :docfile)
+  end
+
 end

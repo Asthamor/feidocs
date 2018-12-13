@@ -1,16 +1,15 @@
 <%= form_for(@document) do |f| %>
   <div class="field">
-    <%= f.text_field :nombre, placeholder: "Título", class:"form-control" %>
+    <%= f.text_field :name, placeholder: "Título", class:"form-control" %>
   </div>
   <div class="field">
-   <input class="field">
-    <%= f.label value: "Elige el documento para subir" %>
-    <%= f.file_field :archivo %>
+    <%= f.label "Elige el documento para subir" %>
+    <%= f.file_field :docfile %>
   </div>
   <div class="field">
     <%= f.submit "Subir", class:"btn-card" %>
   </div>
-  <% @article.errors.full_messages.each do |message| %>
+  <% @document.errors.full_messages.each do |message| %>
     <div class="be-red white small-margin">
       * <%= message %>
     </div>

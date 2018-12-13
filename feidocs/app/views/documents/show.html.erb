@@ -1,6 +1,7 @@
 <div class="container">
-  <h2 class="col-md-12"><%= @document.nombre %></h2>
+  <h2 class="col-md-12"><%= @document.name %></h2>
     <p>Autor (es)</p>
     <p>Fecha creación o última modificación</p>
     <p>Cuerpo del documento</p>
+  <iframe src=<%= url_for(@document.docfile) %> class="col-md-12"> </iframe>
 </div>
