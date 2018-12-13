@@ -4,12 +4,18 @@
       <% @documents.each do |doc| %>
         <div class="col-md-3">
           <div class="card-content">
-            <div class="card-img">
-              <img src="/images/doc_icon.png" alt="rss feed">
-            </div>
+            <% if doc.docfile.content_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"%>
+              <div class="card-img">
+                <img src="/images/doc_icon.png" alt="rss feed">
+              </div>
+            <% else if doc.docfile.content_type == "application/pdf"-%>
+              <div class="card-img">
+                <img src="/images/pdf_icon.png" alt="rss feed">
+              </div>
+            <% end -%>
+            <% end -%>
             <div class="card-desc">
-              <h3><%= doc.nombre %></h3>
-              <p>Descripción documento, autor o no sé</p>
+              <h3><%= doc.name %></h3>
               <a><%= link_to 'Ver documento', doc, class: "btn-card" %></a>
             </div>
           </div>
