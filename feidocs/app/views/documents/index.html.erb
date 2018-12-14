@@ -1,26 +1,90 @@
+<%= stylesheet_link_tag "modal" %>
+
+<!-- Tarjetas de documentos -->
 <section class="details-card">
   <div class="container">
     <div class="row">
-      <% @documents.each do |doc| %>
+      <% @documents.each do |document| %>
         <div class="col-md-3">
           <div class="card-content">
-            <% if doc.docfile.content_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"%>
+            <% if document.docfile.content_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"%>
               <div class="card-img">
                 <img src="/images/doc_icon.png" alt="rss feed">
               </div>
-            <% else if doc.docfile.content_type == "application/pdf"-%>
+            <% else if document.docfile.content_type == "application/pdf"-%>
               <div class="card-img">
                 <img src="/images/pdf_icon.png" alt="rss feed">
               </div>
             <% end -%>
             <% end -%>
             <div class="card-desc">
-              <h3><%= doc.name %></h3>
-              <a><%= link_to 'Ver documento', doc, class: "btn-card" %></a>
+              <h3><%= document.name %></h3>
+              <a><%= link_to 'Visualizar', document, class: "btn-card" %></a>
+              <a><%= link_to 'Eliminar' , document, class: "btn-card" %></a>
+              <a><%= link_to 'Compartir', document_professor_path(document), class: "btn-card", 'data-toggle' => "modal", 'data-target' => "#squarespaceModal2_#{document.id}" %></a>
+              <a><%= link_to 'Renombrar', rename_path(document), class: "btn-card", 'data-toggle' => "modal", 'data-target' => "#squarespaceModal_#{document.id}" %></a>
             </div>
           </div>
         </div>
-      <% end %>
+
+        <!-- Modal para renombrar documentos -->
+        <div class="modal fade" id="squarespaceModal_<%=document.id%>" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h3 class="modal-title" id="lineModalLabel">Cambiar nombre de archivo:</h3>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+              </div>
+              <div class="modal-body">
+                <!-- content goes here -->
+                <div>
+                  <%= form_for document, url: rename_upload_path do |f| %>
+                    <div class="field">
+                      <%= f.label :name %>
+                      <%= f.text_field :name%>
+                    </div>
+                    <%= hidden_field_tag(:documentid, document.id) %>
+                    <%= f.submit 'Renombrar documento', class: "btn btn-default"%>
+                  <%end %>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal para agregar colaboradores-->
+        <div class="modal fade" id="squarespaceModal2_<%=document.id%>" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h3 class="modal-title" id="lineModalLabel">Compartir con:</h3>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+              </div>
+              <div class="modal-body">
+                <!-- content goes here -->
+                <div>
+                  <%= form_for document, url: document_professor_upload_path do |f| %>
+                    <div class="field">
+                      <%= f.label "Profesores:" %>
+                      <% @professors.each do |professor| %>
+                          <div class="field">
+                            <%= check_box_tag "professors[]", professor.id %> <%= professor.fullName %>
+                          </div>
+                      <%end %>
+                    </div>
+                    <%= hidden_field_tag(:documentid, document.id) %>
+                    <%= f.submit 'Compartir', class: "btn btn-default"%>
+                  <%end %>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+    <% end %>
+
     </div>
   </div>
 </section>

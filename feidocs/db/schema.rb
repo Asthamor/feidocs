@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_12_12_214402) do
+ActiveRecord::Schema.define(version: 2018_12_13_171032) do
 
   create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
@@ -46,6 +46,15 @@ ActiveRecord::Schema.define(version: 2018_12_12_214402) do
     t.index ["type"], name: "index_ckeditor_assets_on_type"
   end
 
+  create_table "collaborators", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "document_id"
+    t.bigint "professor_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["document_id"], name: "index_collaborators_on_document_id"
+    t.index ["professor_id"], name: "index_collaborators_on_professor_id"
+  end
+
   create_table "documents", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", default: "", null: false
     t.text "description"
@@ -76,5 +85,7 @@ ActiveRecord::Schema.define(version: 2018_12_12_214402) do
     t.index ["reset_password_token"], name: "index_professors_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "collaborators", "documents"
+  add_foreign_key "collaborators", "professors"
   add_foreign_key "documents", "professors"
 end

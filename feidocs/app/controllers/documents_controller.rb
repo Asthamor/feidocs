@@ -5,8 +5,14 @@ class DocumentsController < ApplicationController
   #GET /documents
   def index
     #SELECT * ALL
+    @professors = Professor.all.where.not(id: current_professor)
+    @document = Document.new
     @documents = Document.where(professor_id: current_professor.id)
     #@activities = Activity.where(subject_id: params[:idSubject])
+  end
+
+  def index_colaborations
+    @documents
   end
 
   #GET /documents/:id
@@ -44,9 +50,43 @@ class DocumentsController < ApplicationController
     redirect_to @document
   end
 
+  def edit
+    @document = Document.find params[:id]
+  end
+
+  def update
+    @document = Document.find params[:id]
+    @document.update documents_params
+    redirect_to @document
+  end
+
+  def rename
+    @document = Document.find params[:id]
+  end
+
+  def rename_upload
+    @document = Document.find params[:documentid]
+    @document.update document_newName
+    redirect_to documents_path
+  end
+
+  def document_professor
+    @professors = Professor.all
+  end
+
+  def document_professor_upload
+    @document = Document.find params[:documentid]
+    @document.professors = params[:professors]
+    @document.save
+    redirect_to documents_path
+  end
+
   def document_params
     params.require(:document).permit(:name, :docfile, :description)
   end
 
+  def document_newName
+    params.require(:document).permit(:name)
+  end
 
 end
