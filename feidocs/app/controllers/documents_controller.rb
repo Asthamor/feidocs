@@ -2,6 +2,7 @@ class DocumentsController < ApplicationController
   require 'htmltoword'
   require 'tempfile'
 
+
   #GET /documents
   def index
     #SELECT * ALL
@@ -11,8 +12,11 @@ class DocumentsController < ApplicationController
     #@activities = Activity.where(subject_id: params[:idSubject])
   end
 
-  def index_colaborations
-    @documents
+  def shared
+    #SELECT * ALL
+    @professors = Professor.all.where.not(id: current_professor)
+    @document = Document.new
+    @documents = Document.where(collaborators: Collaborator.where(professor_id: current_professor.id))
   end
 
   #GET /documents/:id
@@ -70,16 +74,21 @@ class DocumentsController < ApplicationController
     redirect_to documents_path
   end
 
-  def document_professor
-    @professors = Professor.all
-  end
-
   def document_professor_upload
     @document = Document.find params[:documentid]
     @document.professors = params[:professors]
     @document.save
     redirect_to documents_path
   end
+
+  def destroy
+    #DELETE FROM documents
+    @document = Document.find(params[:id])
+    @document.destroy
+    redirect_to documents_path
+  end
+
+  private
 
   def document_params
     params.require(:document).permit(:name, :docfile, :description)

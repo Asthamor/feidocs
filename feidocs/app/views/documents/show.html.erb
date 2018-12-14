@@ -1,7 +1,17 @@
 <div class="container">
   <h2 class="col-md-12"><%= @document.name %></h2>
-    <p>Autor (es)</p>
-    <p>Fecha creación o última modificación</p>
-    <p>Cuerpo del documento</p>
-  <iframe src=<%= url_for(@document.docfile) %> class="col-md-12"> </iframe>
+  <% if @document.docfile.content_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"%>
+    <div class="card-img">
+    <% #show_doc(url_for(@document.docfile)) -%>
+      <div class="field">
+        <% contenido = @document.description %>
+         <%= contenido.html_safe %>
+      </div>
+    </div>
+  <% else if @document.docfile.content_type == "application/pdf"-%>
+      <div class="card-img">
+        <iframe src=<%= url_for(@document.docfile) %> class="col-md-12"> </iframe>
+      </div>
+    <% end -%>
+  <%end %>
 </div>

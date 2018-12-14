@@ -15,7 +15,15 @@
       Logged in as <strong><%= current_professor.email %></strong>.
       <%= link_to 'Edit profile', edit_professor_registration_path, :class => 'navbar-link' %> |
       <%= link_to "Logout", destroy_professor_session_path, method: :delete, :class => 'navbar-link'  %>
-    <% else %>
+      <!--Opciones navegación-->
+      <div>
+        <a><%= link_to 'Crear documento', new_document_path, class: "btn-card" %></a>
+        <a><%= link_to 'Subir documento' , upload_document_path, class: "btn-card" %></a>
+        <a><%= link_to 'Ver mis documentos', documents_path, class: "btn-card" %></a>
+        <a><%= link_to 'Documentos compartidos conmigo', documents_shared_path, class: "btn-card" %></a>
+        <a><%= link_to 'Abrir chat', documents_path, class: "btn-card" %></a>
+      </div>
+  <% else %>
       <%= link_to "Sign up", new_professor_registration_path, :class => 'navbar-link'  %> |
       <%= link_to "Login", new_professor_session_path, :class => 'navbar-link'  %>
     <% end %>

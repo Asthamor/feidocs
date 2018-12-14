@@ -1,6 +1,7 @@
 class Document < ApplicationRecord
   belongs_to :professor
   has_one_attached :docfile
+  has_many :collaborators
 
   validates :docfile, presence: true
   validates :name, presence: true

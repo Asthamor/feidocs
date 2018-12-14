@@ -6,4 +6,7 @@ class Professor < ApplicationRecord
 
   has_many :messages
   has_many :conversations, foreign_key: :sender_id
+
+  has_many :collaborators
+  has_many :documents, through: :collaborators
 end

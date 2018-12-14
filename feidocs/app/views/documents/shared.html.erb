@@ -22,9 +22,6 @@
             <div class="card-desc">
               <h3><%= document.name %></h3>
               <a><%= link_to 'Visualizar', document, class: "btn-card" %></a>
-              <a><%= link_to 'Eliminar' , document, method: :delete, class: "btn-card", data: {confirm: '¿Eliminar documento?'} %></a>
-              <a><%= link_to 'Compartir', document, class: "btn-card", 'data-toggle' => "modal", 'data-target' => "#squarespaceModal2_#{document.id}" %></a>
-              <a><%= link_to 'Renombrar', document, class: "btn-card", 'data-toggle' => "modal", 'data-target' => "#squarespaceModal_#{document.id}" %></a>
             </div>
           </div>
         </div>
