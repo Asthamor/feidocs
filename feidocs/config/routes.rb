@@ -1,5 +1,13 @@
 Rails.application.routes.draw do
 
+  get 'chat/index'
+  resources :conversations, only: [:create] do
+    member do
+      post :close
+    end
+
+    resources :messages, only: [:create]
+  end
   mount Ckeditor::Engine => '/ckeditor'
   devise_for :professors
 
