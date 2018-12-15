@@ -8,6 +8,7 @@ Rails.application.routes.draw do
 
     resources :messages, only: [:create]
   end
+
   mount Ckeditor::Engine => '/ckeditor'
   devise_for :professors
 
@@ -17,7 +18,8 @@ Rails.application.routes.draw do
   patch 'documents/rename' => 'documents#rename_upload', as: :rename_upload
   post 'documents/document_professor' => 'documents#document_professor', as: :document_professor
   patch 'documents/document_professor_upload' => 'documents#document_professor_upload', as: :document_professor_upload
-  get 'documents/shared' => 'documents#shared', as: :documents_shared
+  get 'documents/allshared' => 'documents#allshared', as: :documents_shared
+  get 'documents/shared/:id' => 'documents#shared', as: :document_shared
 
   resources :documents
 

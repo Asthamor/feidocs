@@ -8,6 +8,16 @@
     <%= devise_error_messages! %>
 
     <div class="field fadeIn second">
+      <%= f.label :fullName, value: "Nombre completo" %><br />
+      <%= f.text_field :fullName, autofocus: true %>
+    </div>
+
+    <div class="field fadeIn second">
+      <%= f.label :personalNumber, value: "Número de personal" %><br />
+      <%= f.text_field :personalNumber, autofocus: true %>
+    </div>
+
+    <div class="field fadeIn third">
       <%= f.label :email, value: "Correo electrónico" %><br />
       <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
     </div>
@@ -24,7 +34,7 @@
       <%= f.label :password_confirmation, value: "Confirmación de contraseña" %><br />
       <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
     </div>
-
+    
     <div class="actions fadeIn fourth">
       <%= f.submit "Registrar" %>
     </div>

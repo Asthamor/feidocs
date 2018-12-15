@@ -8,6 +8,22 @@
   <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
     <%= devise_error_messages! %>
 
+    <div class="field fadeIn fourth">
+      <%= f.label :photo, value: "Subir foto de perfil:" %><br />
+      <%= f.file_field :photo %>
+    </div>
+
+    <div class="field fadeIn second">
+      <%= f.label :fullName, value: "Nombre completo" %><br />
+      <%= f.text_field :fullName, autofocus: true %>
+    </div>
+
+    <div class="field fadeIn second">
+      <%= f.label :personalNumber, value: "Número de personal" %><br />
+      <%= f.text_field :personalNumber, autofocus: true %>
+    </div>
+
+
     <div class="field fadeIn second">
       <%= f.label :email, value: "Correo electrónica" %><br />
       <%= f.email_field :email, autofocus: true, autocomplete: "email" %>

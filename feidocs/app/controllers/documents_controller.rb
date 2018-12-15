@@ -12,7 +12,7 @@ class DocumentsController < ApplicationController
     #@activities = Activity.where(subject_id: params[:idSubject])
   end
 
-  def shared
+  def allshared
     #SELECT * ALL
     @professors = Professor.all.where.not(id: current_professor)
     @document = Document.new
@@ -22,7 +22,14 @@ class DocumentsController < ApplicationController
   #GET /documents/:id
   def show
     #Encuentra un registro de documento por ID
-    @document = Document.find(params[:id])
+     @document = Document.find_by("id = ? AND professor_id = ?", params[:id], current_professor.id)
+  end
+
+  #GET /documents/shared/:id
+  def shared
+    #Encuentra un registro de documento por ID
+     @documents = Document.where(collaborators: Collaborator.find_by("document_id = ? AND professor_id = ?", params[:id], current_professor.id))
+     @document = @documents[0]
   end
 
   #GET documents/new
@@ -33,7 +40,7 @@ class DocumentsController < ApplicationController
   def create
     @document = Document.new document_params
     @document.professor_id = current_professor.id
-    fileDoc = Htmltoword::Document.create_and_save @document.description, 'C:\Users\Mari\Desktop\temporal\archivo.doc'
+    fileDoc = Htmltoword::Document.create_and_save @document.description, '..\..\tmp'
     @document.docfile.attach(io: File.open(fileDoc),
                              filename: "archivo.doc",
                              content_type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')

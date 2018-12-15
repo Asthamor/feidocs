@@ -8,6 +8,7 @@ class Document < ApplicationRecord
 
   after_save :save_professors
 
+
       #custom setter
   def professors=(value)
     @professors = value
@@ -23,6 +24,7 @@ class Document < ApplicationRecord
     rescue
       end
   end
+
 
   #validate :docfile_validation
   #def docfile_validation

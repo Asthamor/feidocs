@@ -1,0 +1,18 @@
+<div class="container">
+  <h2 class="col-md-12"><%= @document.name %></h2>
+  <% if @document.docfile.content_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"%>
+    <div class="card-img">
+      <% #show_doc(url_for(@document.docfile)) -%>
+      <div class="field">
+        <% # contenido = @document.description %>
+        <% # contenido.html_safe %>
+        <p> Aqui se veria el contenido del documento pero solo se puede en producción  </p>
+      </div>
+    </div>
+  <% else if @document.docfile.content_type == "application/pdf"-%>
+      <div class="card-img">
+        <iframe src=<%= url_for(@document.docfile) %> class="col-md-12"> </iframe>
+      </div>
+    <% end -%>
+  <%end %>
+</div>
