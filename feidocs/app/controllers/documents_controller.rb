@@ -40,7 +40,7 @@ class DocumentsController < ApplicationController
   def create
     @document = Document.new document_params
     @document.professor_id = current_professor.id
-    fileDoc = Htmltoword::Document.create_and_save @document.description, '..\..\tmp'
+    fileDoc = Htmltoword::Document.create_and_save @document.description, ''
     @document.docfile.attach(io: File.open(fileDoc),
                              filename: "archivo.doc",
                              content_type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
