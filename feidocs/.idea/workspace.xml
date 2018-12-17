@@ -728,7 +728,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/db/migrate/20181214010600_create_messages.rb">
+    <entry file="file:///tmp/key20181216-1032-1c6rel0.secure.pem">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/app/models/message.rb">
