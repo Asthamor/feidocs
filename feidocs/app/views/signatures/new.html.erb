@@ -1,0 +1,32 @@
+<div class="wrapper">
+
+  <div class="fadeIn first">
+    <h1>Generar claves para la firma electrónica</h1>
+  </div>
+
+  <%= form_for @signature do |f| %>
+    <div class="field fadeIn second">
+      <%= f.label :password, value: "Ingresa la contraseña con la que se protegerán tus claves." %>
+      <%= f.label :password, value: "Cada vez que firmes un documento se te pedirá, por lo que es importante que la recuerdes." %>
+      <% if @minimum_password_length %>
+        <em>(<%= @minimum_password_length %> caracteres mínimos)</em>
+      <% end %><br />
+      <%= f.password_field :password, placeholder: "Contraseña", autocomplete: "new-password" %>
+    </div>
+    <div class="field fadeIn third">
+      <%= f.label :confirmation, value: "Confirmación de contraseña" %><br />
+      <%= f.password_field :confirmation, placeholder: "Confirmación de contraseña" %>
+    </div>
+
+    <div class="actions fadeIn fourth">
+      <%= f.submit "Generar y descargar claves" %>
+    </div>
+  <% end %>
+
+    <div class="field fadeIn fourth">
+      <label>"Da clic en este botón si ya descargaste tu clave privada." </label>
+      <a><%= link_to 'YA DESCARGUÉ MI CLAVE PRIVADA', documents_path, class: "btn-card" %></a>
+    </div>
+
+
+</div>

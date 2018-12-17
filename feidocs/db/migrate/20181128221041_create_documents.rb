@@ -4,7 +4,7 @@ class CreateDocuments < ActiveRecord::Migration[5.2]
 
       t.string :name, null: false, default: ""
       t.text :description, null: true
-      t.datetime :certified_at
+      t.datetime :signed_at
 
       t.timestamps
     end

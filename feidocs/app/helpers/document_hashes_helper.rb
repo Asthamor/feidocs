@@ -1,0 +1,2 @@
+module DocumentHashesHelper
+end

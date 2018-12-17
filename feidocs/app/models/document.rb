@@ -2,14 +2,13 @@ class Document < ApplicationRecord
   belongs_to :professor
   has_one_attached :docfile
   has_many :collaborators
+  attr_accessor :private_key
+  attr_accessor :pass
 
-  validates :docfile, presence: true
   validates :name, presence: true
+  before_update :save_professors
 
-  after_save :save_professors
-
-
-      #custom setter
+  #custom setter
   def professors=(value)
     @professors = value
   end
@@ -21,17 +20,8 @@ class Document < ApplicationRecord
     @professors.each do |professor_id|
       Collaborator.create(professor_id: professor_id, document_id: self.id)
     end
-    rescue
+
       end
   end
-
-
-  #validate :docfile_validation
-  #def docfile_validation
-  #   if (! docfile. docfile.content_type.starts_with?('application/pd') or !docfile.content_type.starts_with?('application/vnd.openxmlformats-officedocument.wordprocessingml.documen'))
-  #    docfile.purge
-  #   errors[:base] << 'Formato incorrecto'
-  # end
-  #end
 
 end

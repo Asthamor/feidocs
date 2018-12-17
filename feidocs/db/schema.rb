@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_12_14_010600) do
+ActiveRecord::Schema.define(version: 2018_12_17_092246) do
 
   create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
@@ -51,6 +51,8 @@ ActiveRecord::Schema.define(version: 2018_12_14_010600) do
     t.bigint "professor_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "certified", limit: 1
+    t.datetime "certified_at"
     t.index ["document_id"], name: "index_collaborators_on_document_id"
     t.index ["professor_id"], name: "index_collaborators_on_professor_id"
   end
@@ -65,6 +67,13 @@ ActiveRecord::Schema.define(version: 2018_12_14_010600) do
     t.index ["sender_id"], name: "index_conversations_on_sender_id"
   end
 
+  create_table "document_hashes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "document_id"
+    t.index ["document_id"], name: "index_document_hashes_on_document_id"
+  end
+
   create_table "documents", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", default: "", null: false
     t.text "description"
@@ -72,7 +81,13 @@ ActiveRecord::Schema.define(version: 2018_12_14_010600) do
     t.datetime "updated_at", null: false
     t.string "docfile"
     t.bigint "professor_id"
+    t.datetime "signed_at"
     t.index ["professor_id"], name: "index_documents_on_professor_id"
+  end
+
+  create_table "hash_documents", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "messages", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -105,9 +120,18 @@ ActiveRecord::Schema.define(version: 2018_12_14_010600) do
     t.index ["reset_password_token"], name: "index_professors_on_reset_password_token", unique: true
   end
 
+  create_table "signatures", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "professor_id"
+    t.index ["professor_id"], name: "index_signatures_on_professor_id"
+  end
+
   add_foreign_key "collaborators", "documents"
   add_foreign_key "collaborators", "professors"
+  add_foreign_key "document_hashes", "documents"
   add_foreign_key "documents", "professors"
   add_foreign_key "messages", "conversations"
   add_foreign_key "messages", "professors"
+  add_foreign_key "signatures", "professors"
 end
