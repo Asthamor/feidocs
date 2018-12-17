@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   devise_for :professors
 
   get 'documents/upload' => 'documents#upload', as: :upload_document
+  get 'documents/export' => 'documents#convert', as: :convert
   post 'documents/upload' => 'documents#after_upload', as: :after_upload
   get 'documents/rename' => 'documents#rename', as: :rename
   patch 'documents/rename' => 'documents#rename_upload', as: :rename_upload

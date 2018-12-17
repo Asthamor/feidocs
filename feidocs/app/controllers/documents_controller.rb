@@ -40,9 +40,9 @@ class DocumentsController < ApplicationController
   def create
     @document = Document.new document_params
     @document.professor_id = current_professor.id
-    fileDoc = Htmltoword::Document.create_and_save @document.description, ''
+    fileDoc = Htmltoword::Document.create_and_save @document.description, 'C:\Users\zaret\Downloads\testruby\archivo.docx'
     @document.docfile.attach(io: File.open(fileDoc),
-                             filename: "archivo.doc",
+                             filename: "archivo.docx",
                              content_type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
     @document.save!
     fileDoc.close
@@ -95,6 +95,21 @@ class DocumentsController < ApplicationController
     redirect_to documents_path
   end
 
+  def convert
+    require 'docx'
+    docx_document = Document.find_by("id = ? AND professor_id = ?", params[:id], current_professor.id)
+    docx = Docx::Document.open(ActiveStorage::Blob.service.send(:path_for, docx_document.filename.to_s))
+    @document = Document.new
+    @document.name = docx.name
+    @document.description = docx.description
+    pdf = WickedPdf.new.pdf_from_string(docx.to_html)
+    @document.docfile.attach(io:File.open(pdf),
+                             filename: docx.name,
+                             content_type: "application/pdf")
+    @document.professor_id = current_professor.id
+    @document.save!
+    redirect_to documents_path
+  end
   private
 
   def document_params
@@ -104,5 +119,7 @@ class DocumentsController < ApplicationController
   def document_newName
     params.require(:document).permit(:name)
   end
+
+
 
 end
