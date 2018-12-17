@@ -45,9 +45,11 @@ gem 'execjs'
 gem 'ckeditor'
 gem 'htmltoword'
 gem 'docx', '~> 0.2.07', :require => ["docx"]
-gem 'openssl'
 gem 'wicked_pdf'
 gem 'wkhtmltopdf-binary'
+gem 'openssl', '~> 2.1', '>= 2.1.2'
+gem 'prawn', '~> 2.1'
+gem 'combine_pdf', '~> 1.0', '>= 1.0.15'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

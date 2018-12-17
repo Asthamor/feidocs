@@ -1,7 +1,7 @@
 class DocumentsController < ApplicationController
   require 'htmltoword'
   require 'tempfile'
-
+  require 'openssl'
 
   #GET /documents
   def index
@@ -110,6 +110,60 @@ class DocumentsController < ApplicationController
     @document.save!
     redirect_to documents_path
   end
+
+  def sign
+    @document = Document.find(params[:format])
+  end
+
+  def after_sign
+    @document = Document.find params[:documentid]
+    @doc = Document.new documents_params_sign
+    @doc.name =  @document.name
+    @doc.professor_id= @document.professor_id
+    @doc.description = @document.description
+
+    digest = OpenSSL::Digest::SHA256.new
+
+    uploaded_io = params[:document][:private_key]
+    #archivo1 = File.read(uploaded_io)
+    #archivo = uploaded_io.read
+    archivo = File.read('/home/maritello/Escritorio/privatekey(1).pem')
+    #archivo = File.read('/home/maritello/Descargas/privatekey(10).pem')
+
+
+    key = OpenSSL::PKey::RSA.new archivo
+
+    newsignature = key.sign digest, @document.docfile
+    hash =  File.new('\home\maritello\Documentos\git\feidocs\feidocs\tmp\hash' + @document.id + '.sha256' , "w+")
+    open hash.path, 'w' do |io| io.write newsignature end
+    hashdoc = DocumentHash.new
+    hashdoc.hash.attach(io: File.open(hash),
+                        filename: 'hash.sha256',
+                        content_type: 'text/sha256')
+    #filename = "#{Prawn::DATADIR}/pdfs/multipage_template.pdf"
+    signature = Signature.find_by(professor_id: current_professor.id)
+
+    Prawn::Document.generate("certificado.pdf", :template => url_for(@document.docfile)) do
+      font "Times-Roman"
+      text "public key: + #{signature.public_key.to_s}", :align => :center
+      text "digest: + #{digest.to_s}", :align => :center
+    end
+
+    pdf = CombinePDF.new
+    pdf << CombinePDF.load(archivo)
+    pdf << CombinePDF.load(url_for(@document.docfile))
+    pdf.save '\home\maritello\Documentos\git\feidocs\feidocs\tmp\documentoCertificado.pdf'
+    @doc.docfile.attach(io: File.open(pdf),
+                        filename: 'signed' + @doc.id + '.pdf',
+                        content_type: 'application/pdf')
+    @doc.save
+    hashdoc.document_id = @doc.id
+
+    hashdoc.save
+    redirect_to @doc
+  end
+
+
   private
 
   def document_params
@@ -118,6 +172,10 @@ class DocumentsController < ApplicationController
 
   def document_newName
     params.require(:document).permit(:name)
+  end
+
+  def documents_params_sign
+    params.require(:document).permit(:private_key, :pass)
   end
 
 
