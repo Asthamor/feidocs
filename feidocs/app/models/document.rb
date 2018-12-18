@@ -1,6 +1,7 @@
 class Document < ApplicationRecord
   belongs_to :professor
   has_one_attached :docfile
+  has_one_attached :firma
   has_many :collaborators
   attr_accessor :private_key
   attr_accessor :pass

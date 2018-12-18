@@ -82,12 +82,8 @@ ActiveRecord::Schema.define(version: 2018_12_17_092246) do
     t.string "docfile"
     t.bigint "professor_id"
     t.datetime "signed_at"
+    t.text "firma"
     t.index ["professor_id"], name: "index_documents_on_professor_id"
-  end
-
-  create_table "hash_documents", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "messages", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|

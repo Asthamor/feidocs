@@ -123,46 +123,93 @@ class DocumentsController < ApplicationController
     @doc.description = @document.description
 
     digest = OpenSSL::Digest::SHA256.new
-
-    uploaded_io = params[:document][:private_key]
+    #uploaded_io = params[:document][:private_key]
     #archivo1 = File.read(uploaded_io)
     #archivo = uploaded_io.read
-    archivo = File.read('/home/maritello/Escritorio/privatekey(1).pem')
+    archivo = File.read('/home/maritello/Descargas/keys (1).pem')
     #archivo = File.read('/home/maritello/Descargas/privatekey(10).pem')
+    key = OpenSSL::PKey::RSA.new archivo, "ilovemagic"
 
+    #RECUPERA PDF Y OBTIENE SU PATH
+    path = "/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/docfile.pdf}"
+    File.open(path, 'wb') do |file|
+      file.write(@document.docfile.download)
+    end
+    document = File.open(path)
 
-    key = OpenSSL::PKey::RSA.new archivo
+    #FIRMA Y GUARDA LA STRING EN UN ARCHIVO
+    newsignature = key.sign digest, document.path
+    path_hash = "/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/hash"
+    File.open(path_hash, "w:ASCII-8BIT") do |file|
+      file.write(newsignature)
+    end
+    document_hash = File.open(path_hash)
+    dochash = File.read(document_hash)
 
-    newsignature = key.sign digest, @document.docfile
-    hash =  File.new('\home\maritello\Documentos\git\feidocs\feidocs\tmp\hash' + @document.id + '.sha256' , "w+")
-    open hash.path, 'w' do |io| io.write newsignature end
-    hashdoc = DocumentHash.new
-    hashdoc.hash.attach(io: File.open(hash),
-                        filename: 'hash.sha256',
-                        content_type: 'text/sha256')
-    #filename = "#{Prawn::DATADIR}/pdfs/multipage_template.pdf"
+    #RECUPERA LLAVE PÚBLICA DE PROFESOR QUE SUBE DOCUMENTO
     signature = Signature.find_by(professor_id: current_professor.id)
+    path_signature = "/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/signature.pem"
+    File.open(path_signature, 'wb') do |file|
+      file.write(signature.public_key.download)
+    end
+    document_signature = File.open(path_signature)
+    public = File.read(document_signature)
 
-    Prawn::Document.generate("certificado.pdf", :template => url_for(@document.docfile)) do
+    #GENERA PDF CON PUBLICKEY Y DIGEST
+    Prawn::Document.generate("/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/certificado.pdf", :template => document) do
       font "Times-Roman"
-      text "public key: + #{signature.public_key.to_s}", :align => :center
+      text "public key: + #{public.to_s}", :align => :center
       text "digest: + #{digest.to_s}", :align => :center
     end
 
+    #COMBINA PDF RECIÉN CREADO Y EL ORIGINAL
     pdf = CombinePDF.new
-    pdf << CombinePDF.load(archivo)
-    pdf << CombinePDF.load(url_for(@document.docfile))
-    pdf.save '\home\maritello\Documentos\git\feidocs\feidocs\tmp\documentoCertificado.pdf'
-    @doc.docfile.attach(io: File.open(pdf),
-                        filename: 'signed' + @doc.id + '.pdf',
+    pdf << CombinePDF.load(document.path)
+    pdf << CombinePDF.load("/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/certificado.pdf")
+    pdf.save '/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/certificado.pdf'
+    @doc.docfile.attach(io: File.open('/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/certificado.pdf'),
+                        filename: 'signed' + @doc.id.to_s + '.pdf',
                         content_type: 'application/pdf')
+    @doc.firma.attach(io: File.open(path_hash),
+                             filename: 'firma',
+                             content_type: 'text/plain')
     @doc.save
-    hashdoc.document_id = @doc.id
 
-    hashdoc.save
     redirect_to @doc
   end
 
+  def validate
+    @document = Document.find(params[:format])
+    digest = OpenSSL::Digest::SHA256.new
+
+    path_hash = "/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/signature.sha256"
+    File.open(path_hash, 'wb') do |file|
+      file.write(@document.firma.download)
+    end
+    document_hash = File.open(path_hash)
+    dochash = File.read(document_hash)
+
+    keydoc = Signature.find_by(professor_id: @document.professor_id)
+    path_key = "/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/publickey.pem"
+    File.open(path_key, 'wb') do |file|
+      file.write(keydoc.public_key.download)
+    end
+    document_key = File.open(path_key)
+    publickey = File.read(document_key)
+
+    path_doc = "/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/doc.pdf"
+    File.open(path_doc, 'wb') do |file|
+      file.write(@document.docfile.download)
+    end
+
+    public_key = OpenSSL::PKey::RSA.new(publickey)
+
+    if public_key.verify digest, dochash, path_doc
+      puts 'Valid'
+    else
+      puts 'Invalid'
+    end
+  end
 
   private
 
@@ -177,7 +224,5 @@ class DocumentsController < ApplicationController
   def documents_params_sign
     params.require(:document).permit(:private_key, :pass)
   end
-
-
 
 end

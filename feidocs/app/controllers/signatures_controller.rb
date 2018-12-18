@@ -13,47 +13,36 @@ require 'tempfile'
   def create
     @signature = Signature.new signature_params
     if @signature.password == @signature.confirmation
-        key = OpenSSL::PKey::RSA.new 2048
-        public = Tempfile.new(['key', '.pem'])
-        #private = Tempfile.new(['key', '.pem'])
-        open public.path, 'w' do |io| io.write key.public_key.to_pem end
-        #open private.path, 'w' do |io| io.write key.to_pem end
-        #open 'private_key.pem', 'w' do |io| io.write key.to_pem end
-        #open 'public_key.pem', 'w' do |io| io.write key.public_key.to_pem end
-
+        key = OpenSSL::PKey::RSA.new 4096
         cipher = OpenSSL::Cipher.new 'AES-128-CBC'
         pass_phrase = @signature.password
         key_secure = key.export cipher, pass_phrase
-
-        #open 'private.secure.pem', 'w' do |io| io.write key_secure end
+        #Guarda llave pública
+        public = Tempfile.new(['publickey', '.pem'])
+        open public.path, 'w' do |io| io.write key.public_key end
 
         @signature.public_key.attach(io: File.open(public),
-                                     filename: "key-" + current_professor.id.to_s + ".pem",
+                                     filename: "publickey-" + current_professor.id.to_s + ".pem",
                                      content_type: 'application/x-pem-file')
         @signature.professor_id = current_professor.id
-
-        #file.read
-        #file.close
-        #file.unlink
-        #@signature.private_key = @privates.path
         @signature.save
+        #Guarda y descarga ambas llaves
+        bothkeys = Tempfile.new(['privatekey', '.pem'])
+        open bothkeys.path, 'w' do |io| io.write key_secure end
 
-        @privates = Tempfile.new(['key', '.secure.pem'])
-        open @privates.path, 'w' do |io| io.write key_secure end
-
-        redirect_to download_signature_path(path: @privates.path)
+        redirect_to download_signature_path(path: bothkeys.path)
     else
       redirect_to new_signature_path
     end
   end
 
 def download
+  puts params[:path]
   send_file(
       params[:path],
-      filename: "privatekey.pem",
+      filename: "keys.pem",
       type: "application/x-pem-file"
   )
-  File.delete(params[:path])
 end
 
   private

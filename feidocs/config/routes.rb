@@ -25,6 +25,8 @@ Rails.application.routes.draw do
   get 'signatures/download' => 'signatures#download', as: :download_signature
   get 'documents/sign' => 'documents#sign', as: :sign_document
   patch 'documents/sign' => 'documents#after_sign', as: :after_sign_document
+  get 'documents/validate' => 'documents#validate', as: :validate_document
+
 
   resources :documents
   resources :signatures, only: [:new, :create]
