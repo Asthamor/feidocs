@@ -1,10 +1,10 @@
 class DocumentsController < ApplicationController
   require 'htmltoword'
   require 'tempfile'
-  require 'openssl'
 
   #GET /documents
   def index
+
     #SELECT * ALL
     @professors = Professor.all.where.not(id: current_professor)
     @document = Document.new
@@ -116,6 +116,8 @@ class DocumentsController < ApplicationController
   end
 
   def after_sign
+    require 'openssl'
+    require 'origami'
     @document = Document.find params[:documentid]
     @doc = Document.new documents_params_sign
     @doc.name =  @document.name
@@ -139,26 +141,21 @@ class DocumentsController < ApplicationController
 
     #FIRMA Y GUARDA LA STRING EN UN ARCHIVO
     newsignature = key.sign digest, document.path
-    path_hash = "/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/hash"
-    File.open(path_hash, "w:ASCII-8BIT") do |file|
-      file.write(newsignature)
-    end
-    document_hash = File.open(path_hash)
-    dochash = File.read(document_hash)
+
 
     #RECUPERA LLAVE PÚBLICA DE PROFESOR QUE SUBE DOCUMENTO
-    signature = Signature.find_by(professor_id: current_professor.id)
-    path_signature = "/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/signature.pem"
-    File.open(path_signature, 'wb') do |file|
-      file.write(signature.public_key.download)
-    end
-    document_signature = File.open(path_signature)
-    public = File.read(document_signature)
+    #signature = Signature.find_by(professor_id: current_professor.id)
+    #path_signature = "/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/signature.pem"
+    #File.open(path_signature, 'wb') do |file|
+     # file.write(signature.public_key.download)
+    #end
+    #document_signature = File.open(path_signature)
+    #public = File.read(document_signature)
 
     #GENERA PDF CON PUBLICKEY Y DIGEST
     Prawn::Document.generate("/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/certificado.pdf", :template => document) do
       font "Times-Roman"
-      text "public key: + #{public.to_s}", :align => :center
+      text "public key: + #{key.public_key.to_s}", :align => :center
       text "digest: + #{digest.to_s}", :align => :center
     end
 
@@ -167,51 +164,68 @@ class DocumentsController < ApplicationController
     pdf << CombinePDF.load(document.path)
     pdf << CombinePDF.load("/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/certificado.pdf")
     pdf.save '/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/certificado.pdf'
-    @doc.docfile.attach(io: File.open('/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/certificado.pdf'),
+    #@doc.firma.attach(io: File.open(path_hash),
+    #                         filename: 'firma',
+    #                         content_type: 'text/plain')
+    certificate = generate_certificate(key)
+    pdf_certified = Origami::PDF.read "/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/certificado.pdf"
+    page = pdf_certified.get_page(1)
+    rectangle = Origami::Annotation::Widget::Signature.new
+    rectangle.Rect = Origami::Rectangle[:llx => 89.0, :lly => 386.0, :urx => 190.0, :ury => 353.0]
+    #aqui se añade la signature al rectangle
+    page.add_annotation(rectangle)
+    pdf_certified.sign(certificate, key,
+             :method => 'adbe.pkcs7.sha1',
+             :annotation => rectangle,
+             :location => "Mexico",
+             :contact => current_professor.email,
+             :reason => "Firma de enterado",
+                       :issuer => current_profesor.fullName,
+                       :contact => current_profesor.email,
+    )
+
+    certificadopath = "/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/pdffirmado.pdf"
+    #File.open(certificadopath, 'wb') do |file|
+    #  file.write(pdf_certified)
+    #end
+    pdf_certified.save(certificadopath)
+    #document = File.open(certificadopath)
+    @doc.docfile.attach(io: File.open(certificadopath),
                         filename: 'signed' + @doc.id.to_s + '.pdf',
                         content_type: 'application/pdf')
-    @doc.firma.attach(io: File.open(path_hash),
-                             filename: 'firma',
-                             content_type: 'text/plain')
-    @doc.save
-
+    @doc.save!
     redirect_to @doc
   end
 
   def validate
     @document = Document.find(params[:format])
-    digest = OpenSSL::Digest::SHA256.new
-
-    path_hash = "/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/signature.sha256"
-    File.open(path_hash, 'wb') do |file|
-      file.write(@document.firma.download)
-    end
-    document_hash = File.open(path_hash)
-    dochash = File.read(document_hash)
-
-    keydoc = Signature.find_by(professor_id: @document.professor_id)
-    path_key = "/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/publickey.pem"
-    File.open(path_key, 'wb') do |file|
-      file.write(keydoc.public_key.download)
-    end
-    document_key = File.open(path_key)
-    publickey = File.read(document_key)
 
     path_doc = "/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/doc.pdf"
     File.open(path_doc, 'wb') do |file|
       file.write(@document.docfile.download)
     end
+    pdf_certified = Origami::PDF.read path_doc
 
-    public_key = OpenSSL::PKey::RSA.new(publickey)
+    puts pdf_certified.signed?
 
-    if public_key.verify digest, dochash, path_doc
-      puts 'Valid'
-    else
-      puts 'Invalid'
-    end
   end
 
   private
+
+  def generate_certificate(key)
+    require 'openssl'
+    professor = Professor.find(current_professor.id)
+    name = OpenSSL::X509::Name.new [['CN',"#{professor.fullName}"], ['DC', 'UV']]
+    cert = OpenSSL::X509::Certificate.new
+    cert.version = 2
+    cert.serial = 0
+    cert.not_before = Time.now
+    cert.not_after = Time.now + 3600
+    cert.public_key = key.public_key
+    cert.subject = name
+    cert.issuer = name
+    cert
+  end
 
   def document_params
     params.require(:document).permit(:name, :docfile, :description)
