@@ -51,6 +51,7 @@ gem 'openssl', '~> 2.1', '>= 2.1.2'
 gem 'prawn', '~> 2.1'
 gem 'combine_pdf', '~> 1.0', '>= 1.0.15'
 gem 'origami'
+gem 'azure-storage', :require => false
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
