@@ -24,7 +24,8 @@ Rails.application.routes.draw do
   get 'documents/sign' => 'documents#sign', as: :sign_document
   patch 'documents/sign' => 'documents#after_sign', as: :after_sign_document
   get 'documents/validate' => 'documents#validate', as: :validate_document
-  #get 'chat/index' => 'chat#index', as: :chat_index
+  get 'inicio/index' => 'inicio#index', as: :root_
+  get 'documents/downloadshared' => 'documents/downloadshared', as: :document_downloadshared_path
 
 
 

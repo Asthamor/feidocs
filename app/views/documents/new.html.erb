@@ -1,16 +1,14 @@
-<div>
+<div class="container">
 
   <% @document.errors.full_messages.each do |msg| %>
     <li><%= msg %></li>
   <% end %>
-
   <div>
   <%= form_for @document do |f| %>
-    <div class="field">
-      <%= f.label :name %>
-      <%= f.text_field :name %>
+    <div class="field text-center">
+      <%= f.text_field :name, placeholder: "Título"%>
     </div>
-    <div class="field" id="ckeditor">
+    <div class="field text-center" id="ckeditor">
       <%= f.cktext_area :description, :class => "form-control" %>
     </div>
     <%= f.submit 'Subir documento'%>

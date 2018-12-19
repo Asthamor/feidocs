@@ -7,26 +7,32 @@
       <% @documents.each do |document| %>
 
         <!-- Información, imagen y botones -->
-        <div class="col-md-3">
-          <div class="card-content">
+        <div class="col-md-4">
+          <div class="card-content text-center">
             <% if document.docfile.content_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"%>
               <div class="card-img">
-                <img src="../images/doc_Icon.png" alt="rss feed">
+                <img class="text-center" style="width: 80%" src="../images/doc_Icon.png" alt="rss feed">
+              </div>
+              <div class="card-desc">
+                <h5><%= document.name %></h5>
+                <a><%= link_to 'Visualizar', document, class: "btn-card", style: "width: 100%"  %></a>
+                <a><%= link_to 'Compartir', document, class: "btn-card", style: "width: 100%" , 'data-toggle' => "modal", 'data-target' => "#squarespaceModal2_#{document.id}" %></a>
+                <a><%= link_to 'Exportar', convert_path({:id=>document}), class: "btn-card", style: "width: 100%"  %></a>
+                <a><%= link_to 'Eliminar' , document, method: :delete, class: "btn-card", style: "width: 100%", data: {confirm: '¿Eliminar documento?'} %></a>
               </div>
             <% else if document.docfile.content_type == "application/pdf"-%>
-                <div class="card-img">
+                <div class="card-img text-center" style="width: 80%">
                   <img src="../images/pdf_Icon.png" alt="rss feed">
+                </div>
+                <div class="card-desc">
+                  <h5><%= document.name %></h5>
+                  <a><%= link_to 'Visualizar', document, class: "btn-card", style: "width: 100%" %></a>
+                  <a><%= link_to 'Compartir', document, class: "btn-card" , style: "width: 100%" , 'data-toggle' => "modal", 'data-target' => "#squarespaceModal2_#{document.id}" %></a>
+                  <a><%= link_to 'Firmar', sign_document_path(document), class: "btn-card", style: "width: 100%"  %></a>
+                  <a><%= link_to 'Eliminar' , document, method: :delete, class: "btn-card", style: "width: 100%" , data: {confirm: '¿Eliminar documento?'} %></a>
                 </div>
               <% end -%>
             <% end -%>
-            <div class="card-desc">
-              <h3><%= document.name %></h3>
-              <a><%= link_to 'Visualizar', document, class: "btn-card" %></a>
-              <a><%= link_to 'Exportar', convert_path({:id=>document}), class: "btn-card" %></a>
-              <a><%= link_to 'Eliminar' , document, method: :delete, class: "btn-card", data: {confirm: '¿Eliminar documento?'} %></a>
-              <a><%= link_to 'Compartir', document, class: "btn-card", 'data-toggle' => "modal", 'data-target' => "#squarespaceModal2_#{document.id}" %></a>
-              <a><%= link_to 'Firmar', sign_document_path(document), class: "btn-card" %></a>
-            </div>
           </div>
         </div>
 

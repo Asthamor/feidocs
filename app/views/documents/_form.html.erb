@@ -1,8 +1,8 @@
-<div class="container">
+<div class="container" style="height: 100%;" >
   <%begin %>
   <h2 class="col-md-12"><%= @document.name %></h2>
   <% if @document.docfile.content_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"%>
-      <div class="field">
+      <div class="container-fluid" style="height: 100%">
         <%require 'docx'
         d = Docx::Document.open(@pathdocument)
             d.each_paragraph do |p| %>
@@ -10,12 +10,13 @@
            <% end %>
       </div>
   <% else if @document.docfile.content_type == "application/pdf"-%>
-      <div class="card-img">
-        <iframe src=<%= url_for(@document.docfile) %> class="col-md-12"> </iframe>
+      <div class="container-fluid" style="height: 100%">
+        <iframe style="width: 110%; height: 100%" src=<%= url_for(@document.docfile) %> > </iframe>
       </div>
     <% end -%>
   <%end %>
     <%rescue%>
      <p>Error al cargar el documento</p>
     <%end%>
+
 </div>

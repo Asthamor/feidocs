@@ -255,6 +255,34 @@ class DocumentsController < ApplicationController
     end
   end
 
+  def downloadshared
+    @document = Document.find(params[:format])
+
+    if @document.docfile.content_type == "application/pdf"
+    path_doc = Tempfile.new(['download', '.pdf'], Rails.root.to_s + '/tmp/')
+    File.open(path_doc.path, 'wb') do |file|
+      file.write(@document.docfile.download)
+    end
+
+    send_file(
+        path_doc.path,
+        filename: "#{@document.docfile.filename}",
+        type: "application/pdf"
+    )
+    else
+      path_doc = Tempfile.new(['download', '.docx'], Rails.root.to_s + '/tmp/')
+      File.open(path_doc.path, 'wb') do |file|
+        file.write(@document.docfile.download)
+      end
+      send_file(
+          path_doc.path,
+          filename: "#{@document.docfile.filename}",
+          type: "application/application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      )
+      end
+
+  end
+
   private
 
   def generate_certificate(key)

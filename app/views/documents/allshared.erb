@@ -7,21 +7,23 @@
       <% @documents.each do |document| %>
 
         <!-- Información, imagen y botones -->
-        <div class="col-md-3">
+        <div class="col-md-4">
+        <div class="card-content text-center">
           <div class="card-content">
             <% if document.docfile.content_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"%>
-              <div class="card-img">
+              <div class="card-img" style="width: 80%" >
                 <img src="../images/doc_Icon.png" alt="rss feed">
               </div>
             <% else if document.docfile.content_type == "application/pdf"-%>
-                <div class="card-img">
+                <div class="card-img" style="width: 80%" >
                   <img src="../images/pdf_Icon.png" alt="rss feed">
                 </div>
               <% end -%>
             <% end -%>
             <div class="card-desc">
-              <h3><%= document.name %></h3>
-              <a><%= link_to 'Visualizar', document_shared_path(document.id), class: "btn-card" %></a>
+              <h5><%= document.name %></h5>
+              <a><%= link_to 'Visualizar', document_shared_path(document.id), class: "btn-card", style: "width: 100%"  %></a>
+              <a><%= link_to 'Descargar', document_downloadshared_path_path(document.id), class: "btn-card", style: "width: 100%"  %></a>
             </div>
           </div>
         </div>
@@ -29,5 +31,6 @@
       <% end %>
 
     </div>
+  </div>
   </div>
 </section>

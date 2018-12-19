@@ -4,14 +4,18 @@ require 'openssl'
 require 'tempfile'
 
   def new
+    begin
     @signature = Signature.find_by(professor_id: current_professor.id)
     if !@signature
       @signature = Signature.new
       @minimum_password_length = 6
+    end
+    rescue
       end
   end
 
   def create
+    begin
     @signature = Signature.new signature_params
     if @signature.password == @signature.confirmation
         key = OpenSSL::PKey::RSA.new 4096
@@ -33,12 +37,16 @@ require 'tempfile'
 
         redirect_to download_signature_path(path: bothkeys.path)
     else
+      flash[:notice] = "La contraseña y la confirmación no coinciden."
       redirect_to new_signature_path
     end
+    rescue
+      end
   end
 
 def download
   puts params[:path]
+
   send_file(
       params[:path],
       filename: "keys.pem",

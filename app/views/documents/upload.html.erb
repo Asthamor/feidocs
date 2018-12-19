@@ -1,14 +1,13 @@
-<div>
-
+<div class="container">
 <% @document.errors.full_messages.each do |msg| %>
   <li><%= msg %></li>
 <% end %>
 
 <%= form_for @document,  url: after_upload_path do |f| %>
-  <div class="field">
+  <div class="field  text-center">
     <%= f.text_field :name, placeholder: "Título", class:"form-control" %>
   </div>
-  <div class="field">
+  <div class="field  text-center">
     <%= f.label "Elige el documento para subir" %>
     <%= f.file_field :docfile, :accept => 'application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document' %>
   </div>
@@ -17,5 +16,4 @@
   </div>
 
 <% end %>
-
 </div>

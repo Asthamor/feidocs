@@ -4,36 +4,127 @@
     <title>Feidocs</title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
   </head>
 
-  <body>
-  <p class="navbar-text pull-right">
-    <% if professor_signed_in? %>
-      Logged in as <strong><%= current_professor.email %></strong>.
-      <%= link_to 'Edit profile', edit_professor_registration_path, :class => 'navbar-link' %> |
-      <%= link_to "Logout", destroy_professor_session_path, method: :delete, :class => 'navbar-link'  %>
-      <!--Opciones navegación-->
-      <div>
-        <a><%= link_to 'Crear documento', new_document_path, class: "btn-card" %></a>
-        <a><%= link_to 'Subir documento' , upload_document_path, class: "btn-card" %></a>
-        <a><%= link_to 'Ver mis documentos', documents_path, class: "btn-card" %></a>
-        <a><%= link_to 'Documentos compartidos conmigo', documents_shared_path, class: "btn-card" %></a>
-        <a><%= link_to 'Abrir chat', chat_index_path, class: "btn-card" %></a>
+  <body class="bg-light">
+  <!-- Navigation -->
+  <div>
+  <nav    class="navbar navbar-expand-lg bg-dark fixed-top text-uppercase" id="mainNav">
+    <div class="container">
+      <img src="https://img.icons8.com/cotton/64/000000/sign-document.png" alt="Logo de Feidocs" style="width:50px;height:50px;">
+      <%= link_to 'Feidocs',root_path, :class => 'navbar-brand js-scroll-trigger text-white'  %>
+      <button class="navbar-toggler navbar-toggler-right text-uppercase bg-primary text-white rounded" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        Menu
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <% if professor_signed_in? %>
+            <li class="nav-item mx-0 mx-lg-1">
+              <%= link_to 'Editar perfil', edit_professor_registration_path, :class => 'text-info navbar-link nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger'  %>
+            </li>
+            <li class="nav-item mx-0 mx-lg-1">
+              <%= link_to "Cerrar sesión", destroy_professor_session_path, method: :delete, class: 'text-info navbar-link nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger'  %>
+            </li>
+            <% else %>
+          <li class="nav-item mx-0 mx-lg-1">
+            <%= link_to "Registrarse", new_professor_registration_path, :class => 'text-info navbar-link nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger'  %>
+          </li>
+          <li class="nav-item mx-0 mx-lg-1">
+            <%= link_to "Iniciar sesión", new_professor_session_path, :class => 'text-info navbar-link nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger'  %>
+          </li>
+            <%end %>
+        </ul>
       </div>
-  <% else %>
-      <%= link_to "Sign up", new_professor_registration_path, :class => 'navbar-link'  %> |
-      <%= link_to "Login", new_professor_session_path, :class => 'navbar-link'  %>
-    <% end %>
-  </p>
+    </div>
+  </nav>
+  </div>
+
+  <div>
+    <% if professor_signed_in? %>
+      <%else %>>
     <% if notice %>
       <p class="alert alert-success"><%= notice %></p>
     <% end %>
     <% if alert %>
       <p class="alert alert-danger"><%= alert %></p>
-    <% end %>  
-      <%= yield %>
+    <% end %>
+      <%end %>
+  </div>
+
+  <div><br></div><div><br></div><div><br></div>
+  <div>
+    <div><p></p></div>
+    <% if professor_signed_in? %>
+      <div><p></p></div>
+      Logged in as <strong><%= current_professor.email %></strong>.
+      <!--Opciones navegación-->
+      <div><p></p></div>
+  <div class="container">
+    <div class="row profile">
+      <div class="col-md-2 bg-info d-inline-block">
+        <div class="profile-sidebar">
+          <div><p></p></div>
+          <div class="profile-userpic"  >
+            <img style="border-radius: 10%" class="img-responsive btn-block" alt="Imagen de perfil" src= <%= url_for(current_professor.photo)%> >
+          </div>
+          <!-- SIDEBAR USER TITLE -->
+          <div><p></p></div>
+          <div class="profile-usertitle text-light">
+            <div class="profile-usertitle-name">
+              <%= current_professor.fullName %>
+            </div>
+            <div class="profile-usertitle-job">
+              <p>Número de personal: <%=  current_professor.personalNumber %> </p>
+            </div>
+          </div>
+          <!-- END SIDEBAR USER TITLE -->
+          <!-- SIDEBAR MENU -->
+          <div class="profile-usermenu">
+            <ul class="text-center">
+              <li>
+                <a><%= link_to 'Crear documento', new_document_path, class: "btn bg-light btn-block" %></a>
+              </li>
+              <li>
+                <a><%= link_to 'Subir documento' , upload_document_path, class: "btn bg-light btn-block" %></a>
+              </li>
+              <li>
+                <a><%= link_to 'Mis documentos', documents_path, class:"btn bg-light btn-block" %></a>
+              </li>
+              <li>
+                <a><%= link_to 'Compartidos', documents_shared_path, class:"btn bg-light btn-block" %></a>
+              </li>
+              <li>
+                <a><%= link_to 'Abrir chat', chat_index_path, class: "btn bg-light btn-block" %></a>
+              </li>
+              <li>
+                <a><%= link_to 'Generar firma', new_signature_path, class: "btn bg-light btn-block" %></a>
+              </li>
+            </ul>
+          </div>
+          <!-- END MENU -->
+        </div>
+      </div>
+      <div class="col-md-10">
+        <div class="profile-content" style="height: 100%">
+          <div class="container bg-light" style="height: 100%">
+            <%= yield %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+      <div class="container bg-light" style="height: 100%">
+      <% else %>
+        <div><p></p></div>
+        <%= yield %>
+    <% end %>
+    </div>
+  </div>
+
+
+
   </body>
 </html>

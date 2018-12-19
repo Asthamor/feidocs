@@ -1,5 +1,5 @@
 a {
-    color: #6c46ed;
+    color: #0069a1;
     display:inline-block;
     text-decoration: none;
     font-weight: 400;
@@ -11,12 +11,12 @@ body {
 }
 
 html {
-    background-color: #6c46ed;
+
 }
 
 
 h1{
-    color: #5300ed;
+    color: #63171a;
 }
 
 
@@ -36,11 +36,11 @@ h2.inactive {
 
 h2.active {
     color: #0d0d0d;
-    border-bottom: 2px solid #6c46ed;
+    border-bottom: 2px solid #0069a1;
 }
 
 input[type=button], input[type=submit], input[type=reset]  {
-    background-color: #6c46ed;
+    background-color: #0085c6;
     border: none;
     color: white;
     padding: 15px 80px;
@@ -62,7 +62,7 @@ input[type=button], input[type=submit], input[type=reset]  {
 }
 
 input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover  {
-    background-color: #6c46ed;
+    background-color: #0085c6;
 }
 
 input[type=button]:active, input[type=submit]:active, input[type=reset]:active  {
@@ -96,7 +96,7 @@ input[type=text] {
 
 input[type=text]:focus {
     background-color: #fff;
-    border-bottom: 2px solid #6c46ed;
+    border-bottom: 2px solid #0069a1;
 }
 
 
@@ -123,7 +123,7 @@ input[type=password] {
 
 input[type=password]:focus {
     background-color: #fff;
-    border-bottom: 2px solid #6c46ed;
+    border-bottom: 2px solid #0077b6;
 }
 
 
@@ -150,7 +150,7 @@ input[type=email] {
 
 input[type=email]:focus {
     background-color: #fff;
-    border-bottom: 2px solid #6c46ed;
+    border-bottom: 2px solid #0077b6;
 }
 
 
@@ -209,7 +209,7 @@ input[type=email]:focus {
     bottom: -10px;
     width: 0;
     height: 2px;
-    background-color: #6c46ed;
+    background-color: #0085c6;
     content: "";
     transition: width 0.2s;
 }

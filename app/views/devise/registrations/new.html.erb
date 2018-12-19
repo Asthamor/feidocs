@@ -1,6 +1,9 @@
-<div class="wrapper">
+<div><p></p></div>
+<div class="wrapper pagination-centered text-center">
+  <div><p></p></div>
 
   <div class="fadeIn first">
+    <div><p></p></div>
     <h1>Registrar cuenta</h1>
   </div>
 
@@ -8,31 +11,27 @@
     <%= devise_error_messages! %>
 
     <div class="field fadeIn second">
-      <%= f.label :fullName, value: "Nombre completo" %><br />
-      <%= f.text_field :fullName, autofocus: true %>
+      <%= f.text_field :fullName, autofocus: true, placeholder:  "Nombre completo" %>
     </div>
 
     <div class="field fadeIn second">
-      <%= f.label :personalNumber, value: "Número de personal" %><br />
+      <%= f.label :password_confirmation, value: "Número de personal", class: "text-dark" %>
       <%= f.text_field :personalNumber, autofocus: true %>
     </div>
 
     <div class="field fadeIn third">
-      <%= f.label :email, value: "Correo electrónico" %><br />
-      <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+      <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "Correo electrónico" %>
     </div>
 
     <div class="field fadeIn third">
-      <%= f.label :password, value: "Contraseña" %>
+      <%= f.password_field :password, autocomplete: "new-password", placeholder: "Contraseña" %><br />
       <% if @minimum_password_length %>
-        <em>(<%= @minimum_password_length %> characters minimum)</em>
+        <em class="text-dark">(<%= @minimum_password_length %> caracteres mínimos)</em>
       <% end %><br />
-      <%= f.password_field :password, autocomplete: "new-password" %>
     </div>
 
     <div class="field fadeIn fourth">
-      <%= f.label :password_confirmation, value: "Confirmación de contraseña" %><br />
-      <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+      <%= f.password_field :password_confirmation, autocomplete: "new-password", placeholder: "Confirmación de contraseña" %>
     </div>
 
     <div class="actions fadeIn fourth">
