@@ -67,9 +67,12 @@
       <div class="col-md-2 bg-info d-inline-block">
         <div class="profile-sidebar">
           <div><p></p></div>
+          <%begin %>>
           <div class="profile-userpic"  >
             <img style="border-radius: 10%" class="img-responsive btn-block" alt="Imagen de perfil" src= <%= url_for(current_professor.photo)%> >
           </div>
+            <%rescue
+            end%>>
           <!-- SIDEBAR USER TITLE -->
           <div><p></p></div>
           <div class="profile-usertitle text-light">
