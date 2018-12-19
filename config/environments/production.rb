@@ -1,6 +1,6 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
-  cofig.web_socket_server_url = "wss://fei-docs.herokuapp.com/cable"
+  config.web_socket_server_url = "wss://fei-docs.herokuapp.com/cable"
   config.action_cable.allowed_request_origins = ["https://fei-docs.herokuapp.com", "http://fei-docs.herokuapp.com"]
   config.action_mailer.default_url_option = { host: "https://fei-docs.herokuapp.com"}
 
