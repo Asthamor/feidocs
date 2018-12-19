@@ -2,7 +2,7 @@ Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
   config.web_socket_server_url = "wss://fei-docs.herokuapp.com/cable"
   config.action_cable.allowed_request_origins = ["https://fei-docs.herokuapp.com", "http://fei-docs.herokuapp.com"]
-  config.action_mailer.default_url_option = { host: "https://fei-docs.herokuapp.com"}
+  config.action_mailer.default_url_options = { host: "https://fei-docs.herokuapp.com"}
 
   # Setup the mailer config
   config.action_mailer.delivery_method = :smtp
