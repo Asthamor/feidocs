@@ -15,3 +15,6 @@ Rails.application.config.assets.paths << Rails.root.join('node_modules')
 
 Rails.application.config.assets.precompile += %w( modal.css )
 Rails.application.config.assets.precompile += %w( chat.css )
+Rails.application.config.assets.precompile += %w( ckeditor/*)
+Rails.application.config.assets.precompile += %w( ckeditor/lang/* )
+Rails.application.config.assets.precompile += %w( ckeditor/contents.css )
