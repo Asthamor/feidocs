@@ -124,16 +124,18 @@ class DocumentsController < ApplicationController
     @doc.professor_id= @document.professor_id
     @doc.description = @document.description
 
+    pass = params[:document][:pass]
+    keys = params[:document][:private_key]
+
     digest = OpenSSL::Digest::SHA256.new
-    #uploaded_io = params[:document][:private_key]
-    #archivo1 = File.read(uploaded_io)
-    #archivo = uploaded_io.read
-    archivo = File.read('/home/maritello/Descargas/keys (1).pem')
-    #archivo = File.read('/home/maritello/Descargas/privatekey(10).pem')
-    key = OpenSSL::PKey::RSA.new archivo, "ilovemagic"
+    #archivo = File.read('/home/maritello/Descargas/keys (1).pem')
+    archivo = File.read(keys.tempfile.path)
+
+    key = OpenSSL::PKey::RSA.new archivo, pass
 
     #RECUPERA PDF Y OBTIENE SU PATH
-    path = "/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/docfile.pdf}"
+    #path = "/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/docfile.pdf"
+    path = Tempfile.new(['uploaded', '.pdf'], Rails.root.to_s + '/tmp/')
     File.open(path, 'wb') do |file|
       file.write(@document.docfile.download)
     end
@@ -143,17 +145,9 @@ class DocumentsController < ApplicationController
     newsignature = key.sign digest, document.path
 
 
-    #RECUPERA LLAVE PÚBLICA DE PROFESOR QUE SUBE DOCUMENTO
-    #signature = Signature.find_by(professor_id: current_professor.id)
-    #path_signature = "/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/signature.pem"
-    #File.open(path_signature, 'wb') do |file|
-     # file.write(signature.public_key.download)
-    #end
-    #document_signature = File.open(path_signature)
-    #public = File.read(document_signature)
-
     #GENERA PDF CON PUBLICKEY Y DIGEST
-    Prawn::Document.generate("/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/certificado.pdf", :template => document) do
+    pathtmp =  Tempfile.new(['public_digest', '.pdf'], Rails.root.to_s + '/tmp/')
+    Prawn::Document.generate(pathtmp) do
       font "Times-Roman"
       text "public key: + #{key.public_key.to_s}", :align => :center
       text "digest: + #{digest.to_s}", :align => :center
@@ -162,13 +156,14 @@ class DocumentsController < ApplicationController
     #COMBINA PDF RECIÉN CREADO Y EL ORIGINAL
     pdf = CombinePDF.new
     pdf << CombinePDF.load(document.path)
-    pdf << CombinePDF.load("/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/certificado.pdf")
-    pdf.save '/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/certificado.pdf'
+    pdf << CombinePDF.load(pathtmp.path)
+    final = Tempfile.new(['signed', '.pdf'], Rails.root.to_s + '/tmp/')
+    pdf.save final.path
     #@doc.firma.attach(io: File.open(path_hash),
     #                         filename: 'firma',
     #                         content_type: 'text/plain')
     certificate = generate_certificate(key)
-    pdf_certified = Origami::PDF.read "/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/certificado.pdf"
+    pdf_certified = Origami::PDF.read final.path
     page = pdf_certified.get_page(1)
     rectangle = Origami::Annotation::Widget::Signature.new
     rectangle.Rect = Origami::Rectangle[:llx => 89.0, :lly => 386.0, :urx => 190.0, :ury => 353.0]
@@ -180,11 +175,11 @@ class DocumentsController < ApplicationController
              :location => "Mexico",
              :contact => current_professor.email,
              :reason => "Firma de enterado",
-                       :issuer => current_profesor.fullName,
-                       :contact => current_profesor.email,
+                       :issuer => current_professor.fullName,
     )
 
-    certificadopath = "/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/pdffirmado.pdf"
+    finalcertified =  Tempfile.new(['certified', '.pdf'], Rails.root.to_s + '/tmp/')
+    certificadopath = finalcertified.path
     #File.open(certificadopath, 'wb') do |file|
     #  file.write(pdf_certified)
     #end
@@ -200,11 +195,11 @@ class DocumentsController < ApplicationController
   def validate
     @document = Document.find(params[:format])
 
-    path_doc = "/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/doc.pdf"
-    File.open(path_doc, 'wb') do |file|
+    path_doc = Tempfile.new(['validate', '.pdf'], Rails.root.to_s + '/tmp/')
+    File.open(path_doc.path, 'wb') do |file|
       file.write(@document.docfile.download)
     end
-    pdf_certified = Origami::PDF.read path_doc
+    pdf_certified = Origami::PDF.read path_doc.path
 
     puts pdf_certified.signed?
 

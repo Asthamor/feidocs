@@ -1,5 +1,22 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
+  cofig.web_socket_server_url = "wss://fei-docs.herokuapp.com/cable"
+  config.action_cable.allowed_request_origins = ["https://fei-docs.herokuapp.com", "http://fei-docs.herokuapp.com"]
+  config.action_mailer.default_url_option = { host: "https://fei-docs.herokuapp.com"}
+
+  # Setup the mailer config
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.smtp_settings = {
+      :user_name => ENV['SENDGRID_USERNAME'],
+      :password => ENV['SENDGRID_PASSWORD'],
+      :domain => 'https://fei-docs.herokuapp.com',
+      :address => 'smtp.sendgrid.net',
+      :port => 587,
+      :authentication => :plain,
+      :enable_starttls_auto => true
+  }
+
 
   # Code is not reloaded between requests.
   config.cache_classes = true
@@ -39,7 +56,7 @@ Rails.application.configure do
   # config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect' # for NGINX
 
   # Store uploaded files on the local file system (see config/storage.yml for options)
-  config.active_storage.service = :local
+  config.active_storage.service = :azure
 
   # Mount Action Cable outside main process or domain
   # config.action_cable.mount_path = nil
