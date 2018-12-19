@@ -25,34 +25,7 @@
               <a><%= link_to 'Exportar', convert_path({:id=>document}), class: "btn-card" %></a>
               <a><%= link_to 'Eliminar' , document, method: :delete, class: "btn-card", data: {confirm: '¿Eliminar documento?'} %></a>
               <a><%= link_to 'Compartir', document, class: "btn-card", 'data-toggle' => "modal", 'data-target' => "#squarespaceModal2_#{document.id}" %></a>
-              <a><%= link_to 'Renombrar', document, class: "btn-card", 'data-toggle' => "modal", 'data-target' => "#squarespaceModal_#{document.id}" %></a>
               <a><%= link_to 'Firmar', sign_document_path(document), class: "btn-card" %></a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Modal para renombrar documentos -->
-        <div class="modal fade" id="squarespaceModal_<%=document.id%>" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h3 class="modal-title" id="lineModalLabel">Cambiar nombre de archivo:</h3>
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
-              </div>
-              <div class="modal-body">
-                <!-- content goes here -->
-                <div>
-                  <%= form_for document, url: rename_upload_path do |f| %>
-                    <div class="field">
-                      <%= f.label :name %>
-                      <%= f.text_field :name%>
-                    </div>
-                    <%= hidden_field_tag(:documentid, document.id) %>
-                    <%= f.submit 'Renombrar documento', class: "btn btn-default"%>
-                  <%end %>
-                </div>
-
-              </div>
             </div>
           </div>
         </div>

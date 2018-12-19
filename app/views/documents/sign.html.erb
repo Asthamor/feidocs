@@ -1,3 +1,9 @@
+<% @document.errors.full_messages.each do |message| %>
+  <div class="be-red white small-margin">
+    * <%= message %>
+  </div>
+<% end %>
+
 <%= form_for @document,  url: after_sign_document_path do |f| %>
   <div class="field">
     <%= f.label :private_key, placeholder: "Sube el archivo de llave privada:" %>
@@ -11,9 +17,5 @@
     <%= f.submit "Subir", class:"btn-card" %>
   </div>
   <%= hidden_field_tag(:documentid, @document.id) %>
-  <% @document.errors.full_messages.each do |message| %>
-    <div class="be-red white small-margin">
-      * <%= message %>
-    </div>
-  <% end %>
+
 <% end %>

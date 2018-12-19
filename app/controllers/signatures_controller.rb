@@ -1,4 +1,5 @@
 class SignaturesController < ApplicationController
+  before_action :authenticate_professor!
 require 'openssl'
 require 'tempfile'
 

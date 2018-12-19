@@ -1,4 +1,5 @@
 class ConversationsController < ApplicationController
+  before_action :authenticate_professor!
   def create
     @conversation = Conversation.get(current_professor.id, params[:professor_id])
 

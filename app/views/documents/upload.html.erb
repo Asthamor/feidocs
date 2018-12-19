@@ -1,3 +1,9 @@
+<div>
+
+<% @document.errors.full_messages.each do |msg| %>
+  <li><%= msg %></li>
+<% end %>
+
 <%= form_for @document,  url: after_upload_path do |f| %>
   <div class="field">
     <%= f.text_field :name, placeholder: "Título", class:"form-control" %>
@@ -9,9 +15,7 @@
   <div class="field">
     <%= f.submit "Subir", class:"btn-card" %>
   </div>
-  <% @document.errors.full_messages.each do |message| %>
-    <div class="be-red white small-margin">
-      * <%= message %>
-    </div>
-  <% end %>
+
 <% end %>
+
+</div>

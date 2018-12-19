@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  root 'documents#index'
+  root 'inicio#index'
 
   get 'chat/index'
   resources :conversations, only: [:create] do
@@ -16,8 +16,6 @@ Rails.application.routes.draw do
   get 'documents/upload' => 'documents#upload', as: :upload_document
   get 'documents/export' => 'documents#convert', as: :convert
   post 'documents/upload' => 'documents#after_upload', as: :after_upload
-  get 'documents/rename' => 'documents#rename', as: :rename
-  patch 'documents/rename' => 'documents#rename_upload', as: :rename_upload
   post 'documents/document_professor' => 'documents#document_professor', as: :document_professor
   patch 'documents/document_professor_upload' => 'documents#document_professor_upload', as: :document_professor_upload
   get 'documents/allshared' => 'documents#allshared', as: :documents_shared
@@ -26,6 +24,8 @@ Rails.application.routes.draw do
   get 'documents/sign' => 'documents#sign', as: :sign_document
   patch 'documents/sign' => 'documents#after_sign', as: :after_sign_document
   get 'documents/validate' => 'documents#validate', as: :validate_document
+  #get 'chat/index' => 'chat#index', as: :chat_index
+
 
 
   resources :documents

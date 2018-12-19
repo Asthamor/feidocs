@@ -1,7 +1,7 @@
 class DocumentsController < ApplicationController
+  before_action :authenticate_professor!
   require 'htmltoword'
   require 'tempfile'
-  #require 'htmltoword'
 
   #GET /documents
   def index
@@ -22,15 +22,30 @@ class DocumentsController < ApplicationController
 
   #GET /documents/:id
   def show
+    begin
+    require 'docx'
     #Encuentra un registro de documento por ID
-     @document = Document.find_by("id = ? AND professor_id = ?", params[:id], current_professor.id)
+    @document = Document.find_by("id = ? AND professor_id = ?", params[:id], current_professor.id)
+    if @document.docfile.content_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      doc_downloaded = Tempfile.new(['document', '.docx'], Rails.root.to_s + '/tmp/')
+      File.open(doc_downloaded.path, 'wb') do |file|
+        file.write(@document.docfile.download)
+      end
+      @pathdocument = doc_downloaded.path
+    end
+    rescue
+
+      end
   end
 
   #GET /documents/shared/:id
   def shared
+    begin
     #Encuentra un registro de documento por ID
      @documents = Document.where(collaborators: Collaborator.find_by("document_id = ? AND professor_id = ?", params[:id], current_professor.id))
      @document = @documents[0]
+    rescue
+    end
   end
 
   #GET documents/new
@@ -39,6 +54,7 @@ class DocumentsController < ApplicationController
   end
 
   def create
+    begin
     @document = Document.new document_params
     @document.professor_id = current_professor.id
     dochtml =  Tempfile.new(['html', '.pdf'], Rails.root.to_s + '/tmp/')
@@ -49,6 +65,9 @@ class DocumentsController < ApplicationController
     @document.save!
     fileDoc.close
     redirect_to @document
+    rescue
+      render 'new'
+      end
   end
 
   def upload
@@ -56,60 +75,68 @@ class DocumentsController < ApplicationController
   end
 
   def after_upload
+    begin
     @document = Document.new document_params
+    @document.description = "Description"
 
+    if @document.docfile.content_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     doc_uploaded = Tempfile.new(['document', '.docx'], Rails.root.to_s + '/tmp/')
-    File.open(doc_uploaded.path, 'wb') do |file|
+    File.open(doc_uploaded.path, "w:ASCII-8BIT") do |file|
       file.write(@document.docfile.download)
     end
     docx = Docx::Document.open(doc_uploaded.path)
+    @document.description = docx.to_html
+    end
 
     @document.professor_id = current_professor.id
-    @document.description = docx.to_html
-    @document.save
+    @document.save!
     redirect_to @document
+    rescue
+      render 'upload'
+    end
   end
 
   def edit
-    @document = Document.find params[:id]
+    @document = Document.find @document = Document.find_by("id = ? AND professor_id = ?", params[:id], current_professor.id)
   end
 
   def update
+    begin
     @document = Document.find params[:id]
     @document.update documents_params
     redirect_to @document
-  end
-
-  def rename
-    @document = Document.find params[:id]
-  end
-
-  def rename_upload
-    @document = Document.find params[:documentid]
-    @document.update document_newName
-    redirect_to documents_path
+    rescue
+      render 'edit'
+      end
   end
 
   def document_professor_upload
+    begin
     @document = Document.find params[:documentid]
     @document.professors = params[:professors]
-    @document.save
+    @document.save!
     redirect_to documents_path
+    rescue
+    end
   end
 
   def destroy
+    begin
     #DELETE FROM documents
     @document = Document.find(params[:id])
-    @document.destroy
+    @document.destroy!
     redirect_to documents_path
+    rescue
+      end
   end
 
   def convert
+    begin
     require 'docx'
     docx_document = Document.find(params[:id])
 
     doc_downloaded = Tempfile.new(['document', '.docx'], Rails.root.to_s + '/tmp/')
-    File.open(doc_downloaded.path, 'wb') do |file|
+    File.open(doc_downloaded.path, "wb") do |file|
       file.write(docx_document.docfile.download)
     end
 
@@ -117,10 +144,16 @@ class DocumentsController < ApplicationController
     @document = Document.new
     @document.name = docx_document.name
     #@document.description = docx.to_html
-    pdf = WickedPdf.new.pdf_from_string(docx.to_html)
+
+    html_doc = Tempfile.new(['document', '.html'], Rails.root.to_s + '/tmp/')
+    File.open(html_doc.path, "wb") do |file|
+      file.write(docx_document.description)
+    end
+
+    pdf = WickedPdf.new.pdf_from_html_file(html_doc.path)
 
     pdf_file = Tempfile.new(['pdf', '.pdf'], Rails.root.to_s + '/tmp/')
-    File.open(pdf_file.path, 'wb') do |file|
+    File.open(pdf_file.path, "wb") do |file|
       file.write(pdf)
     end
 
@@ -130,6 +163,8 @@ class DocumentsController < ApplicationController
     @document.professor_id = current_professor.id
     @document.save!
     redirect_to @document
+    rescue
+    end
   end
 
   def sign
@@ -137,6 +172,7 @@ class DocumentsController < ApplicationController
   end
 
   def after_sign
+    begin
     require 'openssl'
     require 'origami'
     @document = Document.find params[:documentid]
@@ -202,9 +238,13 @@ class DocumentsController < ApplicationController
                         content_type: 'application/pdf')
     @doc.save!
     redirect_to @doc
+    rescue
+      render 'sign'
+    end
   end
 
   def validate
+    begin
     @document = Document.find(params[:format])
 
     path_doc = Tempfile.new(['validate', '.pdf'], Rails.root.to_s + '/tmp/')
@@ -214,7 +254,8 @@ class DocumentsController < ApplicationController
     pdf_certified = Origami::PDF.read path_doc.path
 
     puts pdf_certified.signed?
-
+    rescue
+    end
   end
 
   private

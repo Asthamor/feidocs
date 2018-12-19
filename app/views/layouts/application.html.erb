@@ -21,18 +21,13 @@
         <a><%= link_to 'Subir documento' , upload_document_path, class: "btn-card" %></a>
         <a><%= link_to 'Ver mis documentos', documents_path, class: "btn-card" %></a>
         <a><%= link_to 'Documentos compartidos conmigo', documents_shared_path, class: "btn-card" %></a>
-        <a><%= link_to 'Abrir chat', documents_path, class: "btn-card" %></a>
+        <a><%= link_to 'Abrir chat', chat_index_path, class: "btn-card" %></a>
       </div>
   <% else %>
       <%= link_to "Sign up", new_professor_registration_path, :class => 'navbar-link'  %> |
       <%= link_to "Login", new_professor_session_path, :class => 'navbar-link'  %>
     <% end %>
   </p>
-  <ul class="nav">
-    <li class="active"><a href="/ideas">Ideas</a></li>
-  </ul>
-    <p class="notice"><%= notice %></p>
-    <p class="alert"><%= alert %></p>
     <% if notice %>
       <p class="alert alert-success"><%= notice %></p>
     <% end %>

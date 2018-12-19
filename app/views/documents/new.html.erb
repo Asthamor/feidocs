@@ -1,4 +1,10 @@
 <div>
+
+  <% @document.errors.full_messages.each do |msg| %>
+    <li><%= msg %></li>
+  <% end %>
+
+  <div>
   <%= form_for @document do |f| %>
     <div class="field">
       <%= f.label :name %>
@@ -12,3 +18,4 @@
 
 </div>
 
+</div>
