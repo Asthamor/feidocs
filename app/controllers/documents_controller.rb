@@ -1,6 +1,7 @@
 class DocumentsController < ApplicationController
   require 'htmltoword'
   require 'tempfile'
+  #require 'htmltoword'
 
   #GET /documents
   def index
@@ -40,7 +41,8 @@ class DocumentsController < ApplicationController
   def create
     @document = Document.new document_params
     @document.professor_id = current_professor.id
-    fileDoc = Htmltoword::Document.create_and_save @document.description, 'C:\Users\zaret\Downloads\testruby\archivo.docx'
+    dochtml =  Tempfile.new(['html', '.pdf'], Rails.root.to_s + '/tmp/')
+    fileDoc = Htmltoword::Document.create_and_save @document.description, dochtml.path
     @document.docfile.attach(io: File.open(fileDoc),
                              filename: "archivo.docx",
                              content_type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
@@ -54,9 +56,16 @@ class DocumentsController < ApplicationController
   end
 
   def after_upload
-    #render plain: params[:image].inspect
     @document = Document.new document_params
+
+    doc_uploaded = Tempfile.new(['document', '.docx'], Rails.root.to_s + '/tmp/')
+    File.open(doc_uploaded.path, 'wb') do |file|
+      file.write(@document.docfile.download)
+    end
+    docx = Docx::Document.open(doc_uploaded.path)
+
     @document.professor_id = current_professor.id
+    @document.description = docx.to_html
     @document.save
     redirect_to @document
   end
@@ -97,18 +106,30 @@ class DocumentsController < ApplicationController
 
   def convert
     require 'docx'
-    docx_document = Document.find_by("id = ? AND professor_id = ?", params[:id], current_professor.id)
-    docx = Docx::Document.open(ActiveStorage::Blob.service.send(:path_for, docx_document.filename.to_s))
+    docx_document = Document.find(params[:id])
+
+    doc_downloaded = Tempfile.new(['document', '.docx'], Rails.root.to_s + '/tmp/')
+    File.open(doc_downloaded.path, 'wb') do |file|
+      file.write(docx_document.docfile.download)
+    end
+
+    docx = Docx::Document.open(doc_downloaded.path)
     @document = Document.new
-    @document.name = docx.name
-    @document.description = docx.description
+    @document.name = docx_document.name
+    #@document.description = docx.to_html
     pdf = WickedPdf.new.pdf_from_string(docx.to_html)
-    @document.docfile.attach(io:File.open(pdf),
-                             filename: docx.name,
+
+    pdf_file = Tempfile.new(['pdf', '.pdf'], Rails.root.to_s + '/tmp/')
+    File.open(pdf_file.path, 'wb') do |file|
+      file.write(pdf)
+    end
+
+    @document.docfile.attach(io:File.open(pdf_file.path),
+                             filename: docx_document.name,
                              content_type: "application/pdf")
     @document.professor_id = current_professor.id
     @document.save!
-    redirect_to documents_path
+    redirect_to @document
   end
 
   def sign
@@ -128,13 +149,10 @@ class DocumentsController < ApplicationController
     keys = params[:document][:private_key]
 
     digest = OpenSSL::Digest::SHA256.new
-    #archivo = File.read('/home/maritello/Descargas/keys (1).pem')
     archivo = File.read(keys.tempfile.path)
 
     key = OpenSSL::PKey::RSA.new archivo, pass
 
-    #RECUPERA PDF Y OBTIENE SU PATH
-    #path = "/home/maritello/Escritorio/PROYECTO CERTIFICADOS/docsfirmados/docfile.pdf"
     path = Tempfile.new(['uploaded', '.pdf'], Rails.root.to_s + '/tmp/')
     File.open(path, 'wb') do |file|
       file.write(@document.docfile.download)
@@ -159,14 +177,12 @@ class DocumentsController < ApplicationController
     pdf << CombinePDF.load(pathtmp.path)
     final = Tempfile.new(['signed', '.pdf'], Rails.root.to_s + '/tmp/')
     pdf.save final.path
-    #@doc.firma.attach(io: File.open(path_hash),
-    #                         filename: 'firma',
-    #                         content_type: 'text/plain')
     certificate = generate_certificate(key)
     pdf_certified = Origami::PDF.read final.path
     page = pdf_certified.get_page(1)
     rectangle = Origami::Annotation::Widget::Signature.new
     rectangle.Rect = Origami::Rectangle[:llx => 89.0, :lly => 386.0, :urx => 190.0, :ury => 353.0]
+
     #aqui se añade la signature al rectangle
     page.add_annotation(rectangle)
     pdf_certified.sign(certificate, key,
@@ -180,11 +196,7 @@ class DocumentsController < ApplicationController
 
     finalcertified =  Tempfile.new(['certified', '.pdf'], Rails.root.to_s + '/tmp/')
     certificadopath = finalcertified.path
-    #File.open(certificadopath, 'wb') do |file|
-    #  file.write(pdf_certified)
-    #end
     pdf_certified.save(certificadopath)
-    #document = File.open(certificadopath)
     @doc.docfile.attach(io: File.open(certificadopath),
                         filename: 'signed' + @doc.id.to_s + '.pdf',
                         content_type: 'application/pdf')

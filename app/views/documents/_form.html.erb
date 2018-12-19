@@ -2,11 +2,11 @@
   <h2 class="col-md-12"><%= @document.name %></h2>
   <% if @document.docfile.content_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"%>
     <div class="card-img">
-      <% #show_doc(url_for(@document.docfile)) -%>
+      <% show_doc(url_for(@document.docfile)) -%>
       <div class="field">
-        <% # contenido = @document.description %>
-        <% # contenido.html_safe %>
-        <p> Aqui se veria el contenido del documento pero solo se puede en producción  </p>
+        <% #contenido = @document.description %>
+        <% # = contenido.html_safe %>
+
       </div>
     </div>
   <% else if @document.docfile.content_type == "application/pdf"-%>
