@@ -131,7 +131,6 @@ class DocumentsController < ApplicationController
   end
 
   def convert
-    begin
     require 'docx'
     docx_document = Document.find(params[:id])
 
@@ -156,15 +155,13 @@ class DocumentsController < ApplicationController
     File.open(pdf_file.path, "wb") do |file|
       file.write(pdf)
     end
-
+    @document.description = docx_document.description
     @document.docfile.attach(io:File.open(pdf_file.path),
                              filename: docx_document.name,
                              content_type: "application/pdf")
     @document.professor_id = current_professor.id
     @document.save!
     redirect_to @document
-    rescue
-    end
   end
 
   def sign
